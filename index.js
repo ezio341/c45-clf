@@ -10,7 +10,7 @@ if(process.env.NODE_ENV !== 'production'){
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(bodyParser.json())
-app.use('/static', express.static('files'))
+app.use('/static', express.static('model'))
 app.use('/api', route)
 app.route('/').get((req,res)=>{
   res.sendFile(process.cwd()+"/views/index.html")
