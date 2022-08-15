@@ -57,3 +57,29 @@ export const classify = async (req, res)=>{
   const data = JSON.parse(req.body.data)
   res.json({status:200, ...mClassify(data)})
 }
+
+export const testData = async (req, res)=>{
+  const raw = req.file
+  const csv = fs.readFileSync(raw.path)
+  const {colStart, colEnd} = req.query
+  const resData = []
+  await parse(csv, (err, result)=>{
+    const headers = result[0]
+    const testData = result.slice(1, -1).map(val=>{
+      return val.slice(colStart, colEnd)
+    })
+    testData.forEach((dt, id)=>{
+      resData.push({...mClassify(dt), actual:result.slice(1,-1)[id][result[0].length -1]})
+    })
+    let correct = 0
+    let incorrect = 0
+    resData.forEach((dt,id)=>{
+      if(dt.result === '1'?'berhasil':'gagal' === result.slice(1,-1)[id][result[0].length -1]){
+        correct++
+      }else{
+        incorrect++
+      }
+    })
+    res.json({status:200, correct: correct, incorrect:incorrect, result:resData})
+  })
+}
